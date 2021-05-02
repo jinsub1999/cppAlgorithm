@@ -1,4 +1,7 @@
 #include <iostream>
+#include <queue>
+#include <stack>
+#include <deque>
 #include <string>
 #include <vector>
 #include <iterator>
