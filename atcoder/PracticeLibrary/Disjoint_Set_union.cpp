@@ -13,7 +13,6 @@
 using namespace std;
 
 vector<int> UF(300001);
-vector<vector<pair<int, int>>> Emap(300001, vector<pair<int, int>>());
 
 int UFfind(int a)
 {
