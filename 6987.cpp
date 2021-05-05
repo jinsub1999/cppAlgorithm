@@ -6,50 +6,76 @@
 #include <algorithm>
 #include <set>
 #include <numeric>
+#include <iterator>
 
 using namespace std;
 
-int findMax(vector<int> &V, set<int> &except)
+int team1[15] = {1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 4, 4, 5};
+int team2[15] = {2, 3, 4, 5, 6, 3, 4, 5, 6, 4, 5, 6, 5, 6, 6};
+
+vector<int> Zeros(6, 0);
+vector<int> Wins(6, 0);
+vector<int> Draws(6, 0);
+vector<int> Loses(6, 0);
+vector<int> GWins(6, 0);
+vector<int> GDraws(6, 0);
+vector<int> GLoses(6, 0);
+bool dfs(int gameN = 0)
 {
-    int indx = -1;
-    int maxx = 0;
 
-    for (int i = 0; i < V.size(); i++)
-        if (maxx < V[i] && except.count(i) == 0)
-        {
-            maxx = V[i];
-            indx = i;
-        }
-    if (indx != -1)
-        except.insert(indx);
-    return indx;
-}
-
-int team1[15] = {0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4};
-int team2[15] = {1, 2, 3, 4, 5, 2, 3, 4, 5, 3, 4, 5, 4, 5, 5};
-
-int check(vector<vector<int>> V, vector<vector<int>> &ori, int game = 0)
-{
-    if (game == 15)
+    bool ret = false;
+    if (gameN == 15)
     {
+        for (int i = 0; i < 6; i++)
+        {
+            if (Wins[i] != GWins[i])
+                return false;
+            if (Draws[i] != GDraws[i])
+                return false;
+            if (Loses[i] != GLoses[i])
+                return false;
+        }
+        return true;
     }
-    int ret = 0;
-    check(V, ori, game + 1);
+    else
+    {
+        Wins[team1[gameN] - 1]++;
+        Loses[team2[gameN] - 1]++;
+        ret = ret || dfs(gameN + 1);
+        Wins[team1[gameN] - 1]--;
+        Loses[team2[gameN] - 1]--;
+
+        Draws[team1[gameN] - 1]++;
+        Draws[team2[gameN] - 1]++;
+        ret = ret || dfs(gameN + 1);
+        Draws[team1[gameN] - 1]--;
+        Draws[team2[gameN] - 1]--;
+
+        Loses[team1[gameN] - 1]++;
+        Wins[team2[gameN] - 1]++;
+        ret = ret || dfs(gameN + 1);
+        Loses[team1[gameN] - 1]--;
+        Wins[team2[gameN] - 1]--;
+    }
+    return ret;
 }
 
 int main(void)
 {
-    ios::sync_with_stdio(false);
-    cin.tie(NULL);
-    cout.tie(NULL);
     for (int tc = 0; tc < 4; tc++)
     {
-        vector<vector<int>> WDL(6, vector<int>(3, 0));
-        for (auto &ELEM : WDL)
-            for (auto &elem : ELEM)
-                cin >> elem;
-        vector<vector<int>> V(6, vector<int>(3, 0));
+        Wins.assign(6, 0);
+        Draws.assign(6, 0);
+        Loses.assign(6, 0);
+        // Win
+        // Draw
+        // Lost
+        for (int i = 0; i < 6; i++)
+            cin >> GWins[i] >> GDraws[i] >> GLoses[i];
 
-        check(V, WDL);
+        if (dfs())
+            cout << 1 << ' ';
+        else
+            cout << 0 << ' ';
     }
 }
