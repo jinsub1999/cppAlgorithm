@@ -4,67 +4,69 @@
 #include <queue>
 #include <cmath>
 #include <algorithm>
+#include <set>
+#include <deque>
+#include <numeric>
+#include <iterator>
+#include <map>
 
 using namespace std;
+
+typedef long long ll;
+
+int dy[4] = {0, 0, -1, 1};
+int dx[4] = {-1, 1, 0, 0};
+
+void checkV(vector<vector<int>> &V, int n, int m)
+{
+    vector<int> Minis(n, 0);
+    vector<int> pushes(n, 0);
+    for (auto &elem : V)
+        sort(elem.begin(), elem.end());
+
+    vector<vector<bool>> visited(n, vector<bool>(m, false));
+    for (int i = m; i >= 1; i--)
+    {
+        int mini = (int)1e9 + 1;
+        int miniIndx = -1;
+        for (int j = 0; j < n; j++)
+        {
+            if (mini > V[j][0])
+            {
+                miniIndx = j;
+                mini = V[j][0];
+            }
+        }
+        rotate(V[miniIndx].begin(), V[miniIndx].begin() + 1, V[miniIndx].begin() + i);
+    }
+}
 
 int main(void)
 {
     ios::sync_with_stdio(false);
     cin.tie(NULL);
     cout.tie(NULL);
+
     int t;
     cin >> t;
 
-    for (int tc = 0; tc < t; tc++)
+    while (t--)
     {
         int n, m;
         cin >> n >> m;
-        vector<long long> W(n * m);
-        priority_queue<pair<long long, int>, vector<pair<long long, int>>, greater<>> PQ;
-        for (int i = 0; i < n; i++)
+        vector<vector<int>> V(n, vector<int>(m));
+
+        for (auto &elem : V)
+            for (auto &e : elem)
+                cin >> e;
+
+        checkV(V, n, m);
+        for (auto &elem : V)
         {
-            for (int j = 0; j < m; j++)
-            {
-                cin >> W[m * i + j];
-                PQ.push({W[m * i + j], m * i + j});
-            }
-        }
-
-        for (int i = 0; i < m; i++)
-        {
-            auto popItem = PQ.top();
-            long long val = popItem.first;
-            int Y = popItem.second / m;
-            int X = popItem.second % m;
-
-            if (val != W[m * Y + X])
-            {
-                for (int K = m * Y + i; K < m * Y + m; K++)
-                {
-                    if (val == W[K])
-                    {
-                        Y = K / m;
-                        X = K % m;
-                        break;
-                    }
-                }
-            }
-            long long temp = W[m * Y + i];
-            W[m * Y + i] = W[m * Y + X];
-            W[m * Y + X] = temp;
-
-            PQ.pop();
-        }
-
-        for (int i = 0; i < n; i++)
-        {
-            for (int j = 0; j < m; j++)
-            {
-                cout << W[m * i + j] << ' ';
-            }
+            for (auto &e : elem)
+                cout << e << ' ';
             cout << '\n';
         }
     }
-
     return 0;
 }
